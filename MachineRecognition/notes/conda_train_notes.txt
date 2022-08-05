@@ -1,0 +1,71 @@
+python train.py --logtostderr --train_dir=C:/Adams/Python/MachineRecognition/pics/train/ --pipeline_config_path=C:/Adams/Python/MachineRecognition/pics/data/ssd_inception_v2_pets.config
+
+From tensorflow/models/research/
+protoc object_detection/protos/*.proto --python_out=.
+"C:/Adams/Python/MachineRecognition/protoc-3.4.0-win32/bin/protoc" object_detection/protos/*.proto --python_out=.
+
+set PYTHONPATH=C:\Users\Guy\Desktop\models\research;C:\Users\Guy\Desktop\models\research\slim
+set PYTHONPATH=C:\Adams\Python\MachineRecognition\models\research;C:\Adams\Python\MachineRecognition\models\research\slim
+set PYTHONPATH=C:\Adams\Python\MachineRecognition\models;C:\Adams\Python\MachineRecognition\models\research;C:\Adams\Python\MachineRecognition\models\research\slim
+set PYTHONPATH=C:\Adams\Python\MachineRecognition\models-1.13\research;C:\Adams\Python\MachineRecognition\models-1.13\research\slim
+
+set PATH="C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.7\bin:%cd%"				# causes issues atm (need cuda=10, cudnn=7.4) (uses python=3.7, tensorflow=1.14.0)
+set PATH="C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.7\extras\CUPTI\lib64:%cd%"
+export PATH="C:\tools\cuda\bin:%cd%"
+
+conda install -c conda-forge cudatoolkit=10.0 cudnn=7.4.0
+
+conda activate tf
+
+cd C:\Adams\Python\MachineRecognition\models\official\pip_package
+python setup.py install
+
+python train.py --logtostderr --train_dir=C:/Adams/Python/MachineRecognition/pics/train_carton_feed/ --pipeline_config_path=C:/Adams/Python/MachineRecognition/pics/data_carton_feed/ssd_mobilenet_v2_320x320_coco17_tpu-8.config
+
+python model_main.py --logtostderr --train_dir=C:/Adams/Python/MachineRecognition/pics/train_carton_feed/ --pipeline_config_path=C:/Adams/Python/MachineRecognition/pics/data_carton_feed/ssd_resnet50_v1_fpn_shared_box_predictor_640x640_coco14_sync.config --model_dir=C:/Adams/Python/MachineRecognition/pics/train_carton_feed/
+
+-from tensorboard.plugins.hparams.api import HParam
+
+____STEPS____
+-gather images
+-separate images to train and test
+-go to dir: cd C:\Adams\Python\MachineRecognition\Lib\site-packages\labelImg
+-run: python labelImg.py
+-run: cd C:\Adams\Python\MachineRecognition
+-run: python xml_to_csv.py
+-alter generate_tfrecord.py
+-run commands at top of generate_tfrecord.py
+	-python generate_tfrecord.py --csv_input=pics/data/train_labels.csv  --output_path=pics/data/train.record --image_dir=pics/train
+	-python generate_tfrecord.py --csv_input=pics/data/test_labels.csv  --output_path=pics/data/test.record --image_dir=pics/test
+-setup .config file
+-setup object-detection.pbtxt
+-make sure in conda
+-conda env create -f environment.yml
+-first line in .yml file defines name (tf-gpu)
+-conda activate tf
+-cd C:\Adams\Python\MachineRecognition\models\research\object_detection\legacy
+-run:python train.py --logtostderr --train_dir=C:/Adams/Python/MachineRecognition/pics/train_carton_feed/ --pipeline_config_path=C:/Adams/Python/MachineRecognition/pics/data_carton_feed/ssd_inception_v2_pets.config
+	<if> ModuleNotFoundError: No module named 'nets'
+	<then> run: set PYTHONPATH=C:\Adams\Python\MachineRecognition\models\research;C:\Adams\Python\MachineRecognition\models		\research\slim
+	<also> From tensorflow/models/research/
+	run: protoc object_detection/protos/*.proto --python_out=.
+-(observe training): cd C:\Adams\Python\MachineRecognition\pics\
+-(observe training): tensorboard --logdir='train'
+-go to: cd C:\Adams\Python\MachineRecognition\models\research\object_detection
+-python export_inference_graph.py --input_type image_tensor --pipeline_config_path   C:/Adams/Python/MachineRecognition/pics/data/ssd_inception_v2_pets.config --trained_checkpoint_prefix   C:/Adams/Python/MachineRecognition/pics/train/model.ckpt-100607 --output_directory recognition_graph
+-open by running: jupyter notebook
+-in jupyter notebook open: object_detection_tutorial.ipynb
+-alter MODEL_NAME, PATH_TO_LABELS ,NUM_CLASSES, and PATH_TO_TEST_IMAGES_DIR
+-select Cell -> Run All
+
+set PYTHONPATH=C:\Adams\Python\MachineRecognition\models\research;C:\Adams\Python\MachineRecognition\models\research\slim
+
+protoc object_detection/protos/*.proto --python_out=. 
+
+python export_inference_graph.py --input_type image_tensor --pipeline_config_path C:/Adams/Python/MachineRecognition/pics/data_carton_feed/ssd_resnet50_v1_fpn_shared_box_predictor_640x640_coco14_sync.config --trained_checkpoint_prefix C:/Adams/Python/MachineRecognition/pics/train_carton_feed/model.ckpt-27302 --output_directory recognition_carton_feed
+
+Kernel = 3 > 2 & 1 for accuracy
+
+https://stackoverflow.com/questions/65273118/why-is-tensorflow-not-recognizing-my-gpu-after-conda-install
+
+pip uninstall absl-py argon2-cffi argon2-cffi-bindings astor attrs backcall beautifulsoup4 bleach cffi colorama cycler debugpy decorator defusedxml entrypoints fastjsonschema fonttools gast google-pasta grpcio h5py importlib-metadata importlib-resources ipykernel ipython ipython-genutils ipywidgets jedi jinja2 jsonschema jupyter jupyter-client jupyter-console jupyter-core jupyterlab-pygments jupyterlab-widgets keras-applications keras-preprocessing kiwisolver lxml markdown markupsafe matplotlib matplotlib-inline mistune nbclient nbconvert nbformat nest-asyncio notebook numpy packaging pandocfilters parso pickleshare pillow prometheus-client prompt-toolkit protobuf psutil pycparser pygments pyparsing pyrsistent python-dateutil pywin32 pywinpty pyzmq qtconsole qtpy send2trash six soupsieve tensorboard tensorflow tensorflow-estimator terminado tinycss2 tornado traitlets typing-extensions wcwidth webencodings werkzeug widgetsnbextension wrapt zipp astunparse cachetools charset-normalizer cython dataclasses dill dm-tree etils flatbuffers gin-config google-api-core google-api-python-client google-auth google-auth-httplib2 google-auth-oauthlib google-cloud-bigquery-storage google-cloud-core google-crc32c google-resumable-media googleapis-common-protos httplib2 joblib kaggle keras libclang lvis oauth2client opencv-python opencv-python-headless opt-einsum pandas promise proto-plus py-cpuinfo pyarrow pyasn1-modules pycocotools python-slugify pytz requests requests-oauthlib rsa scikit-learn sentencepiece seqeval tensorboard-data-server tensorboard-plugin-wit tensorflow-addons tensorflow-datasets tensorflow-gpu tensorflow-hub tensorflow-io tensorflow-io-gcs-filesystem tensorflow-metadata tensorflow-model-optimization termcolor text-unidecode tf-models-official tf-slim threadpoolctl toml tqdm typeguard uritemplate

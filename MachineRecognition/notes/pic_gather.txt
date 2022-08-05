@@ -1,0 +1,16 @@
+Left off at: Kraft
+Testing Z-Spectrum Brands
+
+Bucket Conveyor: 207
+Carton Feed: 110
+Carton Magazine: 144
+Flap Closer: 114
+Loader: 107
+Speed Belt: 115
+Tamp: 91
+Transport: 260
+=1148
+
+try downgrading to python 3.7
+tensorflow 1.14.0	keras 2.0.8 (2.1.6)(2.2.4)	tensorflow-io 0.7.2	numpy==1.16.4
+conda seems key
